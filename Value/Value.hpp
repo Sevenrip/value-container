@@ -10,7 +10,6 @@
 #include "../variant/variant_io.hpp"
 #include "../Utils/Utils.hpp"
 #include "ValueVisitorEqual.hpp"
-#include "ValueStringConverter.hpp"
 #include "ValueConverter.hpp"
 
 using namespace mapbox::util;
@@ -41,61 +40,56 @@ public:
 	
 	Value(const char * s) : _v(std::make_shared<std::string>(s)) {}
 	Value(bool b) : _v(b) {} //goddam int conversions
-    
-    
-    Value &
-		
-	bool operator!= (const Value& value) noexcept
+    	
+	bool operator!= (const Value& value) const noexcept
     {
         return !(*this == value);
     }
-    bool operator!= (const Value& value) const noexcept
+    bool operator!= (const Value& value) noexcept
     {
         return !(*this == value);
     }
     
-    bool operator== (const Value& value) noexcept
+    bool operator== (const Value& value) const noexcept
     {
         const auto &t = *this;
         return t == value;
     }
     
-    bool operator== (const Value& value) const noexcept
+    bool operator== (const Value& value) noexcept
 	{
 		return mapbox::util::apply_visitor(ValueVisitorEqual(),value._v, _v) ;
 	}
     
-    std::ostream & operator<<(std::ostream & stream, const Value & v)
+    friend std::ostream & operator<<(std::ostream & stream, const Value & v)
     {
-        
+        return stream;
     }
 	
-	public:
+private:
 		values _v;
 	
-	public:
-		template<typename To>
-		auto convertTo() -> decltype(mapbox::util::apply_visitor(typename ConverterAdaptor<To>::AdaptorType(), _v))
-		{
-			using ToValueConverter = typename ConverterAdaptor<To>::AdaptorType;
-			return mapbox::util::apply_visitor(ToValueConverter(), _v);
-		}
-
+public:
+	template<typename To>
+	auto convertTo() const noexcept -> decltype(mapbox::util::apply_visitor(typename ConverterAdaptor<To>::AdaptorType(), _v))
+	{
+		static_assert(std::is_constructible<Value, To>::value, "Type requested to convert is not valid");
+		
+		return mapbox::util::apply_visitor(typename ConverterAdaptor<To>::AdaptorType(), _v);
+	}
 
 	
-	/*template <typename Arg, typename std::enable_if<is_constructible<values, Arg>::value ||
-											   is_constructible<values, shared_ptr<Arg> >::value >::type * = nullptr>
+	template<typename Arg>
 	Value & operator=(Arg && arg)
 	{
-		_v = forward<Arg>(arg);
+		static_assert(std::is_constructible<Value, Arg>::value, "Type requested to convert is not valid");		
+		
+		Value tmp(std::forward<Arg>(arg));
+		using std::swap; //enables ADL in case we use a future variant version that includes a custom swap
+		swap(*this,tmp);
+		
+		return *this;
 	}
-	
-	Value & operator=(const char * s)
-	{
-		_v = make_shared<std::string>(s);
-	}*/
-
-
 
 };
 
