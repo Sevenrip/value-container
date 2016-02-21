@@ -31,7 +31,6 @@ public:
 													std::is_constructible<values, Arg>::value >::type * = nullptr>
 	explicit Value(const Arg & arg) : _v(static_cast<Arg>(arg)) //dodging those sneaky compiler arithmetic type conversions
 	{
-	
 	}
 	
 	template <typename Arg, typename std::enable_if<std::is_constructible<values, std::shared_ptr<typename std::remove_reference<Arg>::type> >::value >::type * = nullptr>
@@ -39,7 +38,7 @@ public:
 	{
 	}
 	
-	Value(const char * s) : _v(std::make_shared<std::string>(s)) {}
+	explicit Value(const char * s) : _v(std::make_shared<std::string>(s)) {}
 	
 	template<typename Arg>
 	Value & operator=(Arg && arg)
@@ -75,7 +74,8 @@ public:
     
     friend std::ostream & operator<<(std::ostream & stream, const Value & v)
     {
-        return stream;
+		stream <<  mapbox::util::apply_visitor(ValueVisitorPrinter(), v._v);
+		return stream;
     }
 	
 

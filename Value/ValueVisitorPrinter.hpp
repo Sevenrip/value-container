@@ -7,54 +7,70 @@
 #include <string>
 #include <sstream>
 #include "../Utils/Utils.hpp"
+#include "../Utils/MetaUtils.hpp"
+#include "Value.hpp"
 
 
-class ValueVisitorPrinter
+struct ValueVisitorPrinter
 {
-public:
-
-    explicit ValueVisitorPrinter(std::stringstream  & stream)
-        : _stream(stream) {}
-    ValueVisitorPrinter& operator=(ValueVisitorPrinter const&) = delete;
 	
-	
-    template <typename T>
-    void operator()(const T & t ) const
+    std::string operator()(bool b ) 
     {
-        _stream << t;
+		return b ? "true" : "false";
+    }
+
+	template <typename T, typename std::enable_if<!supports_output_operator<T>::value>::type * = nullptr>
+    std::string operator()(const T & t ) 
+    {
+		return "";
+    }
+	
+	template <typename T, typename std::enable_if<supports_output_operator<T>::value && !supports_dereference<T>::value>::type * = nullptr>
+    std::string operator()(const T & t )
+    {
+		std::stringstream stream;
+		stream << t;
+		return stream.str();
+    }
+	
+	template <typename T>
+    std::string operator()(const std::shared_ptr<T> & t )
+    {
+        return this->operator()(*t);
     }
 	
 	
-    void operator()(const std::shared_ptr<const std::string> & s ) const
+    std::string operator()(const std::string & s ) 
     {
-        _stream << *s;
+        return s;
     }
 
 	template <typename T>
-    void operator()(const std::shared_ptr<std::vector<T>> & t) const
+    std::string operator()(const std::vector<T> & t)
     {
-		_stream << "[ " ;
-		for(const auto & el : *t) {
-			this->operator()(el);
+		std::string str = "[ ";
+		for(const auto & el : t) {
+			str += this->operator()(el);
 		}
-		_stream << " ]" ;
+		str+=" ]";
+		return str;
     }
 	
-	template <typename T>
-	void operator()(const std::shared_ptr<StringMap<T>> & map)
+	template <typename T, typename U>
+	std::string operator()(const std::unordered_map<T, U> & map)
 	{
-		_stream << "{  " ;
-		for(const auto & pair : *map) {
-			_stream << "{" ;
-			this->operator()(pair.first);
-			this->operator()(pair.second);
-			_stream << "}" ;
+		std::string str = "{ " ;
+		for(const auto & pair : map) {
+			str+= "{ " ;
+			str += this->operator()(pair.first);
+			str += " : " ;
+			str += this->operator()(pair.second);
+			str+= "} " ;
 		}
-		_stream << "  }" ;
-		
+		str+= " }";
+		return str;
 	}
 	
 private:
 	int _depth;
-	std::stringstream  & _stream;
 };
