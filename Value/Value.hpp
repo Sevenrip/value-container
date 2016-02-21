@@ -23,14 +23,15 @@ public:
 	using Vector = std::vector<std::shared_ptr<const Value>>;
 	using StringMap = std::unordered_map<std::shared_ptr<const std::string>, std::shared_ptr<const Value>>;
 	using StringMapEntry = std::pair<std::shared_ptr<const std::string>, std::shared_ptr<const Value>>;
-	using values = variant<std::shared_ptr<std::string>,unsigned int,  float, std::shared_ptr<std::vector<int>>, std::shared_ptr<StringMap>  >;
+	using values = variant<std::shared_ptr<std::string> , bool, unsigned int, float, std::shared_ptr<std::vector<int>>, std::shared_ptr<StringMap>  >;
 
 	
 	Value() {}
-	template <typename Arg, typename std::enable_if<std::is_fundamental<Arg>::value &&
+	template <typename Arg, typename std::enable_if<std::is_arithmetic<Arg>::value &&
 													std::is_constructible<values, Arg>::value >::type * = nullptr>
-	explicit Value(const Arg & arg) : _v(arg)
+	explicit Value(const Arg & arg) : _v(static_cast<Arg>(arg)) //dodging those sneaky compiler arithmetic type conversions
 	{
+	
 	}
 	
 	template <typename Arg, typename std::enable_if<std::is_constructible<values, std::shared_ptr<typename std::remove_reference<Arg>::type> >::value >::type * = nullptr>
@@ -39,7 +40,18 @@ public:
 	}
 	
 	Value(const char * s) : _v(std::make_shared<std::string>(s)) {}
-	Value(bool b) : _v(b) {} //goddam int conversions
+	
+	template<typename Arg>
+	Value & operator=(Arg && arg)
+	{
+		static_assert(std::is_constructible<Value, Arg>::value, "Type requested to convert is not valid");		
+		
+		Value tmp(std::forward<Arg>(arg));
+		using std::swap; //enables ADL in case we use a future variant version that includes a custom swap
+		swap(*this,tmp);
+		
+		return *this;
+	}
     	
 	bool operator!= (const Value& value) const noexcept
     {
@@ -66,6 +78,8 @@ public:
         return stream;
     }
 	
+
+	
 private:
 		values _v;
 	
@@ -78,18 +92,7 @@ public:
 		return mapbox::util::apply_visitor(typename ConverterAdaptor<To>::AdaptorType(), _v);
 	}
 
-	
-	template<typename Arg>
-	Value & operator=(Arg && arg)
-	{
-		static_assert(std::is_constructible<Value, Arg>::value, "Type requested to convert is not valid");		
-		
-		Value tmp(std::forward<Arg>(arg));
-		using std::swap; //enables ADL in case we use a future variant version that includes a custom swap
-		swap(*this,tmp);
-		
-		return *this;
-	}
+
 
 };
 
