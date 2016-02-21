@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <type_traits>
 #include <memory>
 #ifndef _MSC_VER
@@ -41,7 +42,17 @@ struct is_bool<const bool>: public std::true_type { };
 template<>
 struct is_bool<volatile bool> : public std::true_type { };
 
+template<class T, class = decltype(std::declval<std::ostream&>() << std::declval<T>() )> 
+std::true_type  supports_output_operator_test(const T&);
+std::false_type supports_output_operator_test(...);
 
+template<class T> using supports_output_operator = decltype(supports_output_operator_test(std::declval<T>()));
+
+template<class T, class = decltype(*(std::declval<T>()) )> 
+std::true_type  supports_dereference_test(const T&);
+std::false_type supports_dereference_test(...);
+
+template<class T> using supports_dereference  = decltype(supports_dereference_test(std::declval<T>()));
 
 template <class T>
 std::string
