@@ -4,11 +4,11 @@
 #include <memory>
 #include <type_traits>
 #include <string>
-#include "../Utils/Utils.hpp"
+#include "../Utils/MetaUtils.hpp"
 #include "Value.hpp"
 
 template <class To>
-struct BasicValueConverter {
+struct GenericValueConverter {
 	template <typename From, typename std::enable_if<!std::is_same<From,To>::value>::type* = nullptr>
 	To operator()(const From & f){
 		return To();
@@ -32,34 +32,30 @@ struct StringConverter
 		return s;
 	}
 
-	template <typename T, typename std::enable_if< std::numeric_limits<T>::is_integer>::type* = nullptr>
-	std::shared_ptr<const std::string> operator()(const T & t)
+	template <typename From, typename std::enable_if<std::is_arithmetic<From>::value>::type* = nullptr>
+	std::shared_ptr<const std::string> operator()(const From & f)
 	{
 		std::stringstream stream;
-        stream << t;
+		if(std::is_floating_point<From>::value) {
+			stream << std::setprecision(std::numeric_limits<From>::max_digits10);
+		}
+        stream << f;
 		return std::make_shared<const std::string>(stream.str());
 	}
-	
-	template <typename T, class = typename std::enable_if<std::is_floating_point<T>::value>::type>
-	std::shared_ptr<const std::string> operator()(const T & t)
-	{
-		std::stringstream stream;
-		stream << std::setprecision(std::numeric_limits<double>::max_digits10) << t;
-		return std::make_shared<const std::string>(stream.str());
-	}
-	
-	template <typename T,  typename std::enable_if<!std::is_arithmetic<T>::value>::type* = nullptr>
-	std::shared_ptr<const std::string> operator()(const T & t)
+
+	template <typename From,  typename std::enable_if<!std::is_arithmetic<From>::value>::type* = nullptr>
+	std::shared_ptr<const std::string> operator()(const From & t)
 	{
 		return std::make_shared<const std::string>();
 	}
-	template <typename T,  typename std::enable_if<is_bool<T>::value>::type* = nullptr>
-	std::shared_ptr<const std::string> operator()(const T  & b)
+
+	std::shared_ptr<const std::string> operator()(bool b)
 	{
 		std::stringstream stream;
-		stream << (static_cast<bool>(b) ? "true" : "false");
+		stream << (b ? "true" : "false");
 		return std::make_shared<const std::string>(stream.str());
 	}
+	
 };
 
 
@@ -116,7 +112,7 @@ template <typename To, typename = void> struct ConverterAdaptor;
 template<typename To>
 struct ConverterAdaptor<To, typename std::enable_if<!std::is_arithmetic<To>::value>::type>
 {
-	using AdaptorType = BasicValueConverter<To>;
+	using AdaptorType = GenericValueConverter<To>;
 };
 
 template<>
