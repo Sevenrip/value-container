@@ -27,20 +27,20 @@ std::string Value::description(int depth) const
 	return  mapbox::util::apply_visitor(ValueVisitorPrinter(depth), _v);
 }
 
-std::shared_ptr<const std::string> Value::asString() const noexcept
+std::shared_ptr<const std::string> Value::asString(std::shared_ptr<const std::string> defaultValue) const noexcept
 {
-    return this->convertTo<std::string>();
+    return this->convertTo<std::string>(defaultValue);
 }
 
-int Value::asInt() const noexcept
+int Value::asInt(int defaultValue) const noexcept
 {
-    return this->convertTo<int>();
-}
+    return this->convertTo<int>(defaultValue);
+}/*
 
 std::shared_ptr<Value::Vector> Value::asVector() const noexcept
 {
     return this->convertTo<Value::Vector>();
-}
+}*/
 
 std::ostream & operator<<(std::ostream & stream, const Value & v)
 {

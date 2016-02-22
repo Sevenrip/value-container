@@ -59,9 +59,9 @@ public:
 
     std::string description(int depth = 0) const;
     
-    std::shared_ptr<const std::string> asString() const noexcept;
+    std::shared_ptr<const std::string> asString(const std::shared_ptr<const std::string> defaultValue = std::make_shared<const std::string>()) const noexcept;
     
-    int asInt() const noexcept;
+    int asInt(int defaultValue = 0) const noexcept;
     
     std::shared_ptr<Vector> asVector() const noexcept;
 
@@ -73,13 +73,15 @@ private:
 		values _v;
 	
 public:
-	template<typename To>
-	auto convertTo() const noexcept -> decltype(mapbox::util::apply_visitor(typename ConverterAdaptor<To>::AdaptorType(), _v))
+	template<typename To, typename Default>
+	auto convertTo(const Default & defaultValue) const noexcept -> decltype(mapbox::util::apply_visitor(typename ConverterAdaptor<To>::AdaptorType(defaultValue), _v))
 	{
 		static_assert(std::is_constructible<Value, To>::value, "Type requested to convert is not valid");
 		
-		return mapbox::util::apply_visitor(typename ConverterAdaptor<To>::AdaptorType(), _v);
+		return mapbox::util::apply_visitor(typename ConverterAdaptor<To>::AdaptorType(defaultValue), _v);
 	}
+
+
     
 
 

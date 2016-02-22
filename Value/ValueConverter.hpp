@@ -9,11 +9,25 @@
 #include <iomanip>
 #include "../Utils/MetaUtils.hpp"
 
+
+template<class T>
+struct DefaultValueHolder
+{
+protected:	
+	DefaultValueHolder(const T & t) : _defaultValue(t) {};
+	DefaultValueHolder(const DefaultValueHolder &)=delete;
+	DefaultValueHolder & operator=(const DefaultValueHolder &) = delete;
+
+	const T & _defaultValue;
+};
+
+
 template <class To>
-struct GenericValueConverter {
+struct GenericValueConverter : public DefaultValueHolder<std::shared_ptr<To>> {
+	GenericValueConverter(const std::shared_ptr<To> & defaultvalue) : DefaultValueHolder<std::shared_ptr<To>>(defaultvalue) {}
 	template <typename From, typename std::enable_if<!std::is_same<From,To>::value>::type* = nullptr>
 	std::shared_ptr<To> operator()(const From & f){
-		return std::make_shared<To>(To());
+		return this->_defaultValue;
 	}
 	
 	template <typename From, typename std::enable_if<std::is_same<From,To>::value>::type* = nullptr>
@@ -28,8 +42,9 @@ struct GenericValueConverter {
 
 };
 
-struct StringConverter
+struct StringConverter : public DefaultValueHolder<std::shared_ptr<const std::string>>
 {
+	StringConverter(const std::shared_ptr<const std::string> & defaultString) :  DefaultValueHolder<std::shared_ptr<const std::string>>(defaultString) {}
 	std::shared_ptr<const std::string> operator()(const std::shared_ptr<std::string> & s)
 	{
 		return s;
@@ -49,7 +64,7 @@ struct StringConverter
 	template <typename From,  typename std::enable_if<!std::is_arithmetic<From>::value>::type* = nullptr>
 	std::shared_ptr<const std::string> operator()(const From & t)
 	{
-		return std::make_shared<const std::string>();
+		return _defaultValue;
 	}
 
 	std::shared_ptr<const std::string> operator()(bool b)
@@ -63,8 +78,9 @@ struct StringConverter
 
 
 template<typename To>
-struct NumericConverter
+struct NumericConverter : public DefaultValueHolder<To>
 {
+	NumericConverter(const To & defaultNumeric) : DefaultValueHolder<To>(defaultNumeric) {}
 	template <typename From, typename std::enable_if<std::is_arithmetic<From>::value>::type* = nullptr>
 	To operator()(const From & f)
 	{
@@ -80,18 +96,19 @@ struct NumericConverter
 	template <typename From, typename std::enable_if<!std::is_arithmetic<From>::value>::type* = nullptr>
 	To operator()(const From & f)
 	{
-		return 0;
+		return this->_defaultValue;
 	}
 
 };
 
 
-struct BoolConverter
+struct BoolConverter :public DefaultValueHolder<bool>
 {
+	BoolConverter(const bool & defaultBool) : DefaultValueHolder<bool>(defaultBool) {}
 	template <typename From,typename std::enable_if<!std::is_arithmetic<From>::value>::type* = nullptr>
 	bool operator()(const From & f)
 	{
-		return false;
+		return _defaultValue;
 	}
 	
 	template <typename From, typename std::enable_if<std::is_arithmetic<From>::value>::type* = nullptr>

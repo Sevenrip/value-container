@@ -84,8 +84,6 @@ private:
 		return stream.str();
 	}
 
-
-
 	static std::string getTabs(int depth)
     {
     	return depth == 0 ? "" : std::string("\t", depth);
