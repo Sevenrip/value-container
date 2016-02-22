@@ -4,7 +4,7 @@ RM=rm -f
 RM_RECURSIVE=rm -rf
 MKDIR=mkdir
 
-SRCS=stuff_test.cpp
+SRCS=stuff_test.cpp $(wildcard Value/*.hpp)
 OBJS=$(subst .cpp,.o,$(SRCS))
 
 NODEPS=clean all dist-clean clean
@@ -26,7 +26,7 @@ depend: .depend
 
 clean:
 	$(RM) output/*
-	$(RM) $(OBJS)
+	$(RM) $(wildcard *.o)
 	$(RM_RECURSIVE) obj
 	$(RM_RECURSIVE) deps
 	
