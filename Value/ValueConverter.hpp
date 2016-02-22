@@ -10,8 +10,8 @@
 template <class To>
 struct GenericValueConverter {
 	template <typename From, typename std::enable_if<!std::is_same<From,To>::value>::type* = nullptr>
-	To operator()(const From & f){
-		return To();
+	std::shared_ptr<To> operator()(const From & f){
+		return std::make_shared<To>(To());
 	}
 	
 	template <typename From, typename std::enable_if<std::is_same<From,To>::value>::type* = nullptr>
@@ -19,10 +19,11 @@ struct GenericValueConverter {
 		return f;
 	}
 
-	template <typename From, typename std::enable_if<std::is_same<typename std::shared_ptr<To>,From>::value>::type* = nullptr>
-	std::shared_ptr<To>  operator()(const From & f){
+	template <typename From, typename std::enable_if<std::is_same<From,To>::value>::type* = nullptr>
+	std::shared_ptr<To> operator()(const std::shared_ptr<From> & f){
 		return f;
 	}
+
 };
 
 struct StringConverter

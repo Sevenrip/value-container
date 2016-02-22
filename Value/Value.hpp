@@ -2,12 +2,10 @@
 
 #include <memory>
 #include <iostream>
-#include <functional>
 #include <type_traits>
 #include <vector>
 #include "variant/recursive_wrapper.hpp"
 #include "variant/variant.hpp"
-#include "Utils/Utils.hpp"
 #include "ValueVisitorEqual.hpp"
 #include "ValueConverter.hpp"
 #include "ValueVisitorPrinter.hpp"

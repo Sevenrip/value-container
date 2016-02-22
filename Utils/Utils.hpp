@@ -15,12 +15,6 @@
 #include <unordered_map>
 #include <string>
 
-template<typename T>
-using StringMap =  std::unordered_map<std::shared_ptr<const std::string> , std::shared_ptr<const T> >;
-
-template<typename T>
-using StringMapEntry = std::pair<std::shared_ptr<const std::string>, std::shared_ptr<const T> >;
-
 template<typename TimeT = std::chrono::milliseconds>
 struct measure
 {

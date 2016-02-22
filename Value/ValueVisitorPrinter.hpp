@@ -50,27 +50,29 @@ struct ValueVisitorPrinter
     {
 		std::string str = "[ ";
 		for(const auto & el : t) {
-			str += this->operator()(el);
+			str += this->operator()(el) + " ";
 		}
-		str+=" ]";
+		str+="]";
 		return str;
     }
 	
-	template <typename T, typename U>
-	std::string operator()(const std::unordered_map<T, U> & map)
+	template <typename K, typename V>
+	std::string operator()(const std::unordered_map<K, V> & map)
 	{
-		std::string str = "{ " ;
+		std::stringstream stream;
+		stream << "{";
 		for(const auto & pair : map) {
-			str+= "{ " ;
-			str += this->operator()(pair.first);
-			str += " : " ;
-			str += this->operator()(pair.second);
-			str+= "} " ;
+			stream << "{ " << this->operator()(pair.first) << " : " << this->operator()(pair.second) << "} ";
 		}
-		str+= " }";
-		return str;
+		return stream.str();
 	}
+
 	
 private:
+	static std::string getTabs(int depth)
+    {
+    	return depth == 0 ? "" : std::string("\t", depth);
+    }
+
 	int _depth;
 };
