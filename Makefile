@@ -1,14 +1,21 @@
 CXX=g++ 
 CXXFLAGS=-std=c++11
 RM=rm -f
+RM_RECURSIVE=rm -rf
+MKDIR=mkdir
 
 SRCS=stuff_test.cpp
 OBJS=$(subst .cpp,.o,$(SRCS))
 
-all: test
+all: deps test
 
 test: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o output/value_test $(OBJS)
+
+deps:
+	$(MKDIR) deps
+	git clone --branch v1.1.0 https://github.com/mapbox/variant.git deps/variant
+
 
 depend: .depend
 
@@ -18,6 +25,7 @@ depend: .depend
 
 clean:
 	$(RM) output/$(OBJS)
+	$(RM_RECURSIVE) deps
 	
 
 dist-clean: clean
