@@ -23,7 +23,7 @@ public:
 	using Vector = std::vector<std::shared_ptr<const Value>>;
 	using StringMap = std::unordered_map<std::shared_ptr<const std::string>, std::shared_ptr<const Value>>;
 	using StringMapEntry = std::pair<std::shared_ptr<const std::string>, std::shared_ptr<const Value>>;
-	using values = variant<std::shared_ptr<std::string> , bool, unsigned int, float, std::shared_ptr<std::vector<int>>, std::shared_ptr<StringMap>  >;
+    using values = variant<std::shared_ptr<std::string> ,std::shared_ptr<Vector>,  unsigned int, float,bool,std::shared_ptr<std::vector<int>>, std::shared_ptr<StringMap>  >;
 
 	
 	Value() {}
@@ -72,11 +72,30 @@ public:
 		return mapbox::util::apply_visitor(ValueVisitorEqual(),value._v, _v) ;
 	}
     
+    
+    
     friend std::ostream & operator<<(std::ostream & stream, const Value & v)
     {
 		stream <<  mapbox::util::apply_visitor(ValueVisitorPrinter(), v._v);
 		return stream;
     }
+    
+    std::shared_ptr<const std::string> asString() const noexcept
+    {
+        return this->convertTo<std::string>();
+    }
+    
+    int asInt() const noexcept
+    {
+        return this->convertTo<int>();
+    }
+    
+    std::shared_ptr<Vector> asVector() const noexcept
+    {
+        return this->convertTo<Vector>();
+    }
+
+    
 	
 
 	
@@ -91,6 +110,7 @@ public:
 		
 		return mapbox::util::apply_visitor(typename ConverterAdaptor<To>::AdaptorType(), _v);
 	}
+    
 
 
 
