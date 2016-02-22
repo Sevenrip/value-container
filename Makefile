@@ -4,17 +4,18 @@ RM=rm -f
 RM_RECURSIVE=rm -rf
 MKDIR=mkdir
 
-SRCS=stuff_test.cpp 
-OBJS=$(subst .cpp,.o,$(SRCS))
+CPP_FILES=stuff_test.cpp  Value/Value.cpp
+SRC_FILES=$(CPP_FILES)
+OBJS=$(subst .cpp,.o,$(CPP_FILES))
 
-NODEPS=clean all dist-clean clean
+NODEPS=clean dist-clean clean-all deps
 
-all: test
+all: link
 
-test: $(OBJS)
+link: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o output/value_test $(OBJS)
 
-run: test
+run: link
 	./output/value_test
 
 deps:
@@ -23,18 +24,21 @@ deps:
 
 depend: .depend
 
-.depend: $(SRCS)
+.depend: $(SRC_FILES)
 	rm -f ./.depend
 	$(CXX) $(CXXFLAGS) -MM $^>>./.depend;
 
 clean:
 	$(RM) output/*
-	$(RM) $(wildcard *.o)
+	$(RM) $(wildcard *.o) 
+	$(RM) $(wildcard Value/*.o)
 	$(RM_RECURSIVE) obj
+
+clean-all: clean
 	$(RM_RECURSIVE) deps
 	
 
-dist-clean: clean
+dist-clean: clean-all
 	$(RM) *~ .depend
 
 ifeq (0, $(words $(findstring $(MAKECMDGOALS), $(NODEPS))))

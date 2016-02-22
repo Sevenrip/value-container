@@ -6,9 +6,7 @@
 #include <vector>
 #include "variant/recursive_wrapper.hpp"
 #include "variant/variant.hpp"
-#include "ValueVisitorEqual.hpp"
 #include "ValueConverter.hpp"
-#include "ValueVisitorPrinter.hpp"
 
 using namespace mapbox::util;
 
@@ -50,48 +48,22 @@ public:
 		return *this;
 	}
     	
-	bool operator!= (const Value& value) const noexcept
-    {
-        return !(*this == value);
-    }
-    bool operator!= (const Value& value) noexcept
-    {
-        return !(*this == value);
-    }
-    
-    bool operator== (const Value& value) const noexcept
-    {
-        const auto &t = *this;
-        return t == value;
-    }
-    
-    bool operator== (const Value& value) noexcept
-	{
-		return mapbox::util::apply_visitor(ValueVisitorEqual(),value._v, _v) ;
-	}
+	bool operator!= (const Value& value) const noexcept;
+    bool operator!= (const Value& value) noexcept;
+    bool operator== (const Value& value) const noexcept;
+    bool operator== (const Value& value) noexcept;
     
     
     
-    friend std::ostream & operator<<(std::ostream & stream, const Value & v)
-    {
-		stream <<  mapbox::util::apply_visitor(ValueVisitorPrinter(), v._v);
-		return stream;
-    }
+    friend std::ostream & operator<<(std::ostream & stream, const Value & v);
+
+    std::string description(int depth = 0) const;
     
-    std::shared_ptr<const std::string> asString() const noexcept
-    {
-        return this->convertTo<std::string>();
-    }
+    std::shared_ptr<const std::string> asString() const noexcept;
     
-    int asInt() const noexcept
-    {
-        return this->convertTo<int>();
-    }
+    int asInt() const noexcept;
     
-    std::shared_ptr<Vector> asVector() const noexcept
-    {
-        return this->convertTo<Vector>();
-    }
+    std::shared_ptr<Vector> asVector() const noexcept;
 
     
 	
