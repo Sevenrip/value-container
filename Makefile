@@ -7,7 +7,9 @@ MKDIR=mkdir
 SRCS=stuff_test.cpp
 OBJS=$(subst .cpp,.o,$(SRCS))
 
-all: deps test
+NODEPS=clean all dist-clean clean
+
+all: test
 
 test: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o output/value_test $(OBJS)
@@ -23,11 +25,15 @@ depend: .depend
 	$(CXX) $(CXXFLAGS) -MM $^>>./.depend;
 
 clean:
-	$(RM) output/$(OBJS)
+	$(RM) output/*
+	$(RM) $(OBJS)
+	$(RM_RECURSIVE) obj
 	$(RM_RECURSIVE) deps
 	
 
 dist-clean: clean
 	$(RM) *~ .depend
 
-include .depend
+ifeq (0, $(words $(findstring $(MAKECMDGOALS), $(NODEPS))))
+    -include .depend
+endif
