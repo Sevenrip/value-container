@@ -11,6 +11,7 @@
 #include "../Utils/Utils.hpp"
 #include "ValueVisitorEqual.hpp"
 #include "ValueConverter.hpp"
+#include "ValueVisitorPrinter.hpp"
 
 using namespace mapbox::util;
 

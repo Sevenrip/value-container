@@ -1,5 +1,5 @@
 CXX=g++ 
-CXXFLAGS=-std=c++11
+CXXFLAGS=-std=c++11 -Ideps -I.
 RM=rm -f
 RM_RECURSIVE=rm -rf
 MKDIR=mkdir
@@ -13,7 +13,6 @@ test: $(OBJS)
 	$(CXX) $(CXXFLAGS) -o output/value_test $(OBJS)
 
 deps:
-	$(MKDIR) deps
 	git clone --branch v1.1.0 https://github.com/mapbox/variant.git deps/variant
 
 
