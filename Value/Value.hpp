@@ -19,7 +19,7 @@ public:
 	using Vector = std::vector<std::shared_ptr<const Value>>;
 	using StringMap = std::unordered_map<std::shared_ptr<const std::string>, std::shared_ptr<const Value>>;
 	using StringMapEntry = std::pair<std::shared_ptr<const std::string>, std::shared_ptr<const Value>>;
-    using values = variant<std::shared_ptr<std::string> ,std::shared_ptr<Vector>,  unsigned int, float,bool,std::shared_ptr<std::vector<int>>, std::shared_ptr<StringMap>  >;
+    using values = variant<std::shared_ptr<std::string> ,  unsigned int, float,bool, std::shared_ptr<Vector>, std::shared_ptr<StringMap>  >;
 
 	
 	Value() {}
