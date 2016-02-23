@@ -9,12 +9,12 @@ bool Value::operator!= (const Value& value) const noexcept
 
 bool  Value::operator== (const Value& value) const noexcept
 {
-	return mapbox::util::apply_visitor(ValueVisitorEqual(),value._v, _v) ;
+	return mapbox::util::apply_visitor(ValueVisitorEqual(),value._holder, _holder) ;
 }
 
 std::string Value::description(int depth) const
 {
-	return  mapbox::util::apply_visitor(ValueVisitorPrinter(depth), _v);
+	return  mapbox::util::apply_visitor(ValueVisitorPrinter(depth), _holder);
 }
 
 std::shared_ptr<const std::string> Value::asString() const noexcept
@@ -31,6 +31,37 @@ std::shared_ptr<Value::Vector> Value::asVector() const noexcept
 {
     return this->convertTo<Value::Vector>();
 }
+
+bool Value::isNull() const noexcept
+{
+	return _holder.valid();
+}
+
+bool Value::isUnsignedInt() const noexcept
+{
+	return _holder.is<unsigned int>();
+}
+bool Value::isBool() const noexcept
+{
+	return _holder.is<bool>();
+}
+bool Value::isFloat() const noexcept
+{
+	return _holder.is<float>();
+}
+bool Value::isString() const noexcept
+{
+	return _holder.is<std::shared_ptr<const std::string>>();
+}
+bool Value::isVector() const noexcept
+{
+	return _holder.is<std::shared_ptr<const Vector>>();
+}
+bool Value::isMap() const noexcept
+{
+	return _holder.is<std::shared_ptr<const StringMap>>();	
+}
+
 
 std::ostream & operator<<(std::ostream & stream, const Value & v)
 {
