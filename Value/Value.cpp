@@ -6,18 +6,8 @@ bool Value::operator!= (const Value& value) const noexcept
 {
     return !(*this == value);
 }
-bool  Value::operator!= (const Value& value) noexcept
-{
-    return !(*this == value);
-}
 
 bool  Value::operator== (const Value& value) const noexcept
-{
-    const auto &t = *this;
-    return t == value;
-}
-
-bool  Value::operator== (const Value& value) noexcept
 {
 	return mapbox::util::apply_visitor(ValueVisitorEqual(),value._v, _v) ;
 }

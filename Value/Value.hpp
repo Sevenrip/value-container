@@ -49,10 +49,7 @@ public:
 	}
     	
 	bool operator!= (const Value& value) const noexcept;
-    bool operator!= (const Value& value) noexcept;
     bool operator== (const Value& value) const noexcept;
-    bool operator== (const Value& value) noexcept;
-    
     
     
     friend std::ostream & operator<<(std::ostream & stream, const Value & v);

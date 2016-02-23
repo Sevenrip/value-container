@@ -14,14 +14,17 @@ struct C
 	}
 };
 
+std::shared_ptr<const std::string> ss(const char * c) { return std::make_shared<std::string>(c);}
+
 int main()
 {
-	float f = 2.5f;
-	Value v(true);
-	std::string coisas("3123");
-	//v = "asd";
+	Value::StringMap sm;
 
-	std::cout << *v.convertTo<std::string>() << std::endl;
+	float f = 2.5f;
+	Value v(sm);
+	
+	
+	std::cout << v << std::endl;
 	
 	//Value v();
 }

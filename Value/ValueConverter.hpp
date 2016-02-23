@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include <iomanip>
+#include  <limits>
 #include "../Utils/MetaUtils.hpp"
 
 template <class To>
