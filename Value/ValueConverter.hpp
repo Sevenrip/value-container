@@ -31,7 +31,7 @@ struct GenericValueConverter {
 
 struct StringConverter
 {
-	std::shared_ptr<const std::string> operator()(const std::shared_ptr<std::string> & s)
+	std::shared_ptr<const std::string> operator()(const std::shared_ptr<const std::string> & s)
 	{
 		return s;
 	}
@@ -101,9 +101,8 @@ struct BoolConverter
 		return f == 1;
 	}
 	
-	bool operator()(const std::shared_ptr<std::string> & s)
+	bool operator()(const std::shared_ptr<const std::string> & s)
 	{
-		
 		return (*s == "yes" || *s == "true");
 	}
 	
@@ -133,7 +132,7 @@ struct ConverterAdaptor<std::string>
 };
 
 template<typename To>
-struct ConverterAdaptor<To, typename std::enable_if<std::is_arithmetic<To>::value>::type>
+struct ConverterAdaptor<To, typename std::enable_if<std::is_arithmetic<To>::value && !is_bool<To>::value>::type>
 {
 	using ConverterType = NumericConverter<To>;
 };
