@@ -13,7 +13,7 @@
 template <class To>
 struct GenericValueConverter {
 	template <typename From, typename std::enable_if<!std::is_same<From,To>::value>::type* = nullptr>
-	std::shared_ptr<To> operator()(const From & f){
+	std::shared_ptr<const To> operator()(const From & f){
 		return std::make_shared<To>(To());
 	}
 	
@@ -23,7 +23,7 @@ struct GenericValueConverter {
 	}
 
 	template <typename From, typename std::enable_if<std::is_same<From,To>::value>::type* = nullptr>
-	std::shared_ptr<To> operator()(const std::shared_ptr<From> & f){
+	std::shared_ptr<const To> operator()(const std::shared_ptr<From> & f){
 		return f;
 	}
 
@@ -116,26 +116,26 @@ template <typename To, typename = void> struct ConverterAdaptor;
 template<typename To>
 struct ConverterAdaptor<To, typename std::enable_if<!std::is_arithmetic<To>::value>::type>
 {
-	using AdaptorType = GenericValueConverter<To>;
+	using ConverterType = GenericValueConverter<To>;
 };
 
 template<>
 struct ConverterAdaptor<bool>
 {
-	using AdaptorType = BoolConverter;
+	using ConverterType = BoolConverter;
 };
 
 
 template<>
 struct ConverterAdaptor<std::string>
 {
-	using AdaptorType = StringConverter;
+	using ConverterType = StringConverter;
 };
 
 template<typename To>
 struct ConverterAdaptor<To, typename std::enable_if<std::is_arithmetic<To>::value>::type>
 {
-	using AdaptorType = NumericConverter<To>;
+	using ConverterType = NumericConverter<To>;
 };
 
 

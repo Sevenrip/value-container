@@ -21,10 +21,10 @@ int main()
 	Value::StringMap sm;
 
 	float f = 2.5f;
-	Value v(sm);
+	Value v(std::string("323"));
 	
 	
-	std::cout << v << std::endl;
+	std::cout << v.convertTo<std::string>() << std::endl;
 	
 	//Value v();
 }

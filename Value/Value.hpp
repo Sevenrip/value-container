@@ -8,6 +8,7 @@
 #include "variant/variant.hpp"
 #include "ValueConverter.hpp"
 
+
 using namespace mapbox::util;
 
 
@@ -57,8 +58,12 @@ public:
     std::string description(int depth = 0) const;
     
     std::shared_ptr<const std::string> asString() const noexcept;
+	unsigned int asUnsignedInt() const noexcept;
     int asInt() const noexcept;
-    std::shared_ptr<Vector> asVector() const noexcept;
+	bool asBool() const noexcept;
+	float asFloat() const noexcept;
+    std::shared_ptr<const Vector> asVector() const noexcept;
+    std::shared_ptr<const StringMap> asMap() const noexcept;
 	
 	bool isNull() const noexcept;
 	bool isUnsignedInt() const noexcept;
@@ -67,21 +72,19 @@ public:
 	bool isString() const noexcept;
 	bool isVector() const noexcept;
 	bool isMap() const noexcept;
-
-    
-	
-
 	
 private:
 		values _holder;
+		
+		template<typename To> using ResolveReturnConvertType =  decltype(mapbox::util::apply_visitor(typename ConverterAdaptor<To>::ConverterType(), _holder));
 	
 public:
 	template<typename To>
-	auto convertTo() const noexcept -> decltype(mapbox::util::apply_visitor(typename ConverterAdaptor<To>::AdaptorType(), _holder))
+	auto convertTo() const noexcept ->  ResolveReturnConvertType<To>
 	{
 		static_assert(std::is_constructible<Value, To>::value, "Type requested to convert is not valid");
-		
-		return mapbox::util::apply_visitor(typename ConverterAdaptor<To>::AdaptorType(), _holder);
+		using ReturnType =  ResolveReturnConvertType<To>;
+		return  _holder.no_static_assert_is<ReturnType>() ? _holder.get<ReturnType>() : mapbox::util::apply_visitor(typename ConverterAdaptor<To>::ConverterType(), _holder);
 	}
     
 

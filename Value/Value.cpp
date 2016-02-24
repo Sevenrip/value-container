@@ -24,12 +24,32 @@ std::shared_ptr<const std::string> Value::asString() const noexcept
 
 int Value::asInt() const noexcept
 {
-    return this->convertTo<int>();
+    return this->convertTo<unsigned int>();
 }
 
-std::shared_ptr<Value::Vector> Value::asVector() const noexcept
+unsigned int Value::asUnsignedInt() const noexcept
 {
-    return this->convertTo<Value::Vector>();
+	return this->convertTo<unsigned int>();
+}
+
+bool Value::asBool() const noexcept
+{
+	return this->convertTo<bool>();
+}
+
+float Value::asFloat() const noexcept
+{
+	return this->convertTo<float>();	
+}
+
+std::shared_ptr<const Value::StringMap> Value::asMap() const noexcept
+{
+	return this->convertTo<StringMap>();
+}
+
+std::shared_ptr<const Value::Vector> Value::asVector() const noexcept
+{
+    return this->convertTo<Vector>();
 }
 
 bool Value::isNull() const noexcept
