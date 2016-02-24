@@ -1,5 +1,5 @@
 CXX=g++ 
-CXXFLAGS=-std=c++11 -Ideps -I.
+CXXFLAGS=-std=c++11 -I. -Ivariant
 RM=rm -f
 RM_RECURSIVE=rm -rf
 MKDIR=mkdir
@@ -33,12 +33,9 @@ clean:
 	$(RM) $(wildcard *.o) 
 	$(RM) $(wildcard Value/*.o)
 	$(RM_RECURSIVE) obj
-
-clean-all: clean
-	$(RM_RECURSIVE) deps
 	
 
-dist-clean: clean-all
+dist-clean: clean
 	$(RM) *~ .depend
 
 ifeq (0, $(words $(findstring $(MAKECMDGOALS), $(NODEPS))))

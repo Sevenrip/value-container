@@ -4,8 +4,8 @@
 #include <iostream>
 #include <type_traits>
 #include <vector>
-#include "variant/recursive_wrapper.hpp"
-#include "variant/variant.hpp"
+#include "recursive_wrapper.hpp"
+#include "variant.hpp"
 #include "ValueConverter.hpp"
 
 
