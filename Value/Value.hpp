@@ -17,6 +17,7 @@ class Value
 	
 	
 public:
+	using String = std::shared_ptr<const std::string>;
 	using Vector = std::vector<std::shared_ptr<const Value>>;
 	using StringMap = std::unordered_map<std::shared_ptr<const std::string>, std::shared_ptr<const Value>>;
 	using StringMapEntry = std::pair<std::shared_ptr<const std::string>, std::shared_ptr<const Value>>;
@@ -57,7 +58,7 @@ public:
 
     std::string description(int depth = 0) const;
     
-    std::shared_ptr<const std::string> asString() const noexcept;
+    String asString() const noexcept;
 	unsigned int asUnsignedInt() const noexcept;
     int asInt() const noexcept;
 	bool asBool() const noexcept;
@@ -73,19 +74,18 @@ public:
 	bool isVector() const noexcept;
 	bool isMap() const noexcept;
 	
+	template<typename To>
+	To convertTo() const noexcept
+	{
+		return  _holder.no_static_assert_is<To>() ? _holder.get<To>() : mapbox::util::apply_visitor(typename ConverterAdaptor<To>::ConverterType(), _holder);
+	}
+	
 private:
 		values _holder;
 		
-		template<typename To> using ResolveReturnConvertType =  decltype(mapbox::util::apply_visitor(typename ConverterAdaptor<To>::ConverterType(), _holder));
 	
 public:
-	template<typename To>
-	auto convertTo() const noexcept ->  ResolveReturnConvertType<To>
-	{
-		static_assert(std::is_constructible<Value, To>::value, "Type requested to convert is not valid");
-		using ReturnType =  ResolveReturnConvertType<To>;
-		return  _holder.no_static_assert_is<ReturnType>() ? _holder.get<ReturnType>() : mapbox::util::apply_visitor(typename ConverterAdaptor<To>::ConverterType(), _holder);
-	}
+
     
 
 

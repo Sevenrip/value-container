@@ -19,7 +19,7 @@ std::string Value::description(int depth) const
 
 std::shared_ptr<const std::string> Value::asString() const noexcept
 {
-    return this->convertTo<std::string>();
+    return this->convertTo<std::shared_ptr<const std::string>>();
 }
 
 int Value::asInt() const noexcept
@@ -44,12 +44,12 @@ float Value::asFloat() const noexcept
 
 std::shared_ptr<const Value::StringMap> Value::asMap() const noexcept
 {
-	return this->convertTo<StringMap>();
+	return this->convertTo<std::shared_ptr<const StringMap>>();
 }
 
 std::shared_ptr<const Value::Vector> Value::asVector() const noexcept
 {
-    return this->convertTo<Vector>();
+    return this->convertTo<std::shared_ptr<const Vector>>();
 }
 
 bool Value::isNull() const noexcept

@@ -24,7 +24,7 @@ int main()
 	Value v(std::string("323"));
 	
 	
-	std::cout << v.convertTo<std::string>() << std::endl;
+	std::cout << v.convertTo<Value::String>() << std::endl;
 	
 	//Value v();
 }
