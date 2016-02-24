@@ -32,16 +32,16 @@ public:
 	}
 	
 	template <typename Arg, typename std::enable_if<std::is_constructible<values, std::shared_ptr<typename std::remove_reference<Arg>::type> >::value >::type * = nullptr>
-	explicit Value(Arg && arg) : _holder(std::make_shared<typename std::remove_reference<Arg>::type>(std::forward<Arg>(arg)))
+	explicit Value(Arg && arg) : _holder(std::make_shared<typename std::remove_reference<const Arg>::type>(std::forward<Arg>(arg)))
 	{
 	}
 	
-	explicit Value(const char * s) : _holder(std::make_shared<std::string>(s)) {}
+	explicit Value(const char * s) : _holder(std::make_shared<const std::string>(s)) {}
 	
 	template<typename Arg>
 	Value & operator=(Arg && arg)
 	{
-		static_assert(std::is_constructible<Value, Arg>::value, "Type requested to convert is not valid");		
+		static_assert(std::is_constructible<Value, Arg>::value, "Type requested to build is not valid");		
 		
 		Value tmp(std::forward<Arg>(arg));
 		using std::swap; //enables ADL in case we use a future variant version that includes a custom swap
@@ -58,21 +58,21 @@ public:
 
     std::string description(int depth = 0) const;
     
-    String asString() const noexcept;
-	unsigned int asUnsignedInt() const noexcept;
-    int asInt() const noexcept;
-	bool asBool() const noexcept;
-	float asFloat() const noexcept;
-    std::shared_ptr<const Vector> asVector() const noexcept;
-    std::shared_ptr<const StringMap> asMap() const noexcept;
+    String 	asString() 							const noexcept;
+	unsigned int asUnsignedInt() 				const noexcept;
+    int asInt() 								const noexcept;
+	bool asBool() 								const noexcept;
+	float asFloat() 							const noexcept;
+    std::shared_ptr<const Vector> asVector() 	const noexcept;
+    std::shared_ptr<const StringMap> asMap() 	const noexcept;
 	
-	bool isNull() const noexcept;
-	bool isUnsignedInt() const noexcept;
-	bool isBool() const noexcept;
-	bool isFloat() const noexcept;
-	bool isString() const noexcept;
-	bool isVector() const noexcept;
-	bool isMap() const noexcept;
+	bool isNull()			const noexcept;
+	bool isUnsignedInt() 	const noexcept;
+	bool isBool() 			const noexcept;
+	bool isFloat() 			const noexcept;
+	bool isString() 		const noexcept;
+	bool isVector() 		const noexcept;
+	bool isMap() 			const noexcept;
 	
 	template<typename To>
 	To convertTo() const noexcept
