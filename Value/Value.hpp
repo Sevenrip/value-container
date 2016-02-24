@@ -21,16 +21,21 @@ public:
 	using Vector = std::vector<std::shared_ptr<const Value>>;
 	using StringMap = std::unordered_map<std::shared_ptr<const std::string>, std::shared_ptr<const Value>>;
 	using StringMapEntry = std::pair<std::shared_ptr<const std::string>, std::shared_ptr<const Value>>;
+	
     using values = variant<std::shared_ptr<const std::string> ,  unsigned int, float, bool, std::shared_ptr<const Vector>, std::shared_ptr<const StringMap>  >;
 
-	
+	//default ctor
 	Value() {}
+	
+	
+	//Arithmetic types ctor
 	template <typename Arg, typename std::enable_if<std::is_arithmetic<Arg>::value &&
 													std::is_constructible<values, Arg>::value >::type * = nullptr>
 	explicit Value(const Arg & arg) : _holder(static_cast<Arg>(arg)) //dodging those sneaky compiler arithmetic type conversions
 	{
 	}
 	
+	//Perfect Fowarding ctor for complex types
 	template <typename Arg, typename std::enable_if<std::is_constructible<values, std::shared_ptr<typename std::remove_reference<Arg>::type> >::value >::type * = nullptr>
 	explicit Value(Arg && arg) : _holder(std::make_shared<typename std::remove_reference<const Arg>::type>(std::forward<Arg>(arg)))
 	{
