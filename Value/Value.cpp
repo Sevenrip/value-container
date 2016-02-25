@@ -9,7 +9,8 @@ bool Value::operator!= (const Value& value) const noexcept
 
 bool  Value::operator== (const Value& value) const noexcept
 {
-    return mapbox::util::apply_visitor(ValueVisitorEqual(),value._holder, _holder) ;
+    return _holder.which() == value._holder.which()  && 
+           mapbox::util::apply_visitor(ValueVisitorEqual(),value._holder, _holder) ;
 }
 
 std::string Value::description(int depth) const
